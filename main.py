@@ -1,5 +1,10 @@
 from pygame import *
 
+font.init()
+font1 = font.Font(None, 35)
+lose1 = font1.render('player1 lose', True, (180,0,0))
+lose2 = font1.render('player2 lose', True, (180,0,0))
+
 
 class GameSprite(sprite.Sprite):
     def __init__(self, player_image, player_x, player_y, player_speed, wight, height):
@@ -44,18 +49,37 @@ racket1 = Player(player_image="racket.png", player_x=30, player_y=200, player_sp
 racket2 = Player(player_image="racket.png", player_x=520, player_y=200, player_speed=4, wight=50, height=150)
 ball = GameSprite(player_image="ball.png", player_x=200, player_y=200, player_speed=4, wight=50, height=50)
 
+speed_x = 3
+speed_y = 3
+
 while game:
     for e in event.get():
         if e.type == QUIT:
             game = False
     
-    if finish != True:
+    if finish != True: 
         window.fill(back)
         racket1.update_l()
         racket2.update_r()
         racket1.reset()
         racket2.reset()
         ball.reset()
-        
+        ball.rect.x += speed_x
+        ball.rect.y += speed_y 
+
+    if ball.rect.y > win_height-50 or ball.rect.y < 0:
+        speed_y *= -1 
+
+    if sprite.collide_rect(racket1, ball) or sprite.collide_rect(racket2, ball):
+        speed_x *= -1 
+
+    if ball.rect.x < 0:
+        finish = True 
+        window.blit(lose1,(200,200))
+
+    if ball.rect.x >  win_width:
+        finish = True 
+        window.blit(lose2,(200,200))
+
     display.update()
     clock.tick(FPS)
